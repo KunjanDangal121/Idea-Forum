@@ -1,22 +1,31 @@
 <?php
 
 use App\Livewire\IdeasIndex;
+use App\Livewire\ShowIdea;
 use Illuminate\Support\Facades\Route;
 
-// This loads your "Ideas List" component as the homepage
+// 1. FIX: Define the 'home' route. Starter kits like Breeze/Jetstream
+//    redirect here after successful login/registration. We point it to the Idea Index.
+Route::get('/home', function () {
+    return redirect()->route('idea.index');
+})->name('home');
+
+// 2. LIVEWIRE: Idea Index Page (Your Homepage)
 Route::get('/', IdeasIndex::class)->name('idea.index');
 
-// If you have a dashboard or auth routes (like login/register), 
-// they usually go below here. If your file had other code below, 
-// make sure to keep it! 
-//
-// For example, standard auth routes often look like this:
+// 3. LIVEWIRE: Idea Detail Page (The Show Page)
+Route::get('/ideas/{idea:id}', ShowIdea::class)->name('idea.show');
+
+
+// 4. AUTHENTICATION (Dashboard/Profile Routes)
+//    These routes are typically included if you ran 'php artisan breeze:install' or similar.
 Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'), // Or just 'auth' depending on your setup
+    'auth', // <--- MUST be 'auth', not 'auth:sanctum'
+    config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        // CHANGE THIS LINE to redirect to your Idea Index Page
+        return redirect()->route('idea.index');
     })->name('dashboard');
 });

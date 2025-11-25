@@ -10,7 +10,7 @@
                 {{-- Idea Content --}}
                 <div class="flex-1">
                     <h2 class="text-xl font-semibold">
-                        <a href="#" class="hover:underline">{{ $idea->title }}</a>
+                    <a href="{{ route('idea.show', $idea) }}" class="hover:underline">{{ $idea->title }}</a>
                     </h2>
                     <p class="text-gray-600 mt-2 line-clamp-3">
                         {{ $idea->description }}
