@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Idea;
 use Livewire\Component;
+use App\Models\Comment;
 
 class ShowIdea extends Component
 {
@@ -118,6 +119,18 @@ class ShowIdea extends Component
         $this->newComment = '';
         session()->flash('success', 'Comment posted successfully!');
         return redirect(request()->header('Referer')); 
+    }
+
+    public function deleteComment(Comment $comment)
+    {
+        // 1. Authorization Check: Throws an exception if the policy fails
+        $this->authorize('delete', $comment);
+
+        // 2. Action: Delete the comment
+        $comment->delete();
+
+        // 3. Feedback and refresh component (no redirect needed, just refresh the data)
+        session()->flash('success', 'Comment deleted successfully!');
     }
 
     public function deleteIdea()
