@@ -11,7 +11,7 @@ class IdeasIndex extends Component
 {
     use WithPagination;
 
-    // NEW: Properties to bind to search and filter inputs
+    // Properties to bind to search and filter inputs
     public string $search = '';
     public string $statusFilter = 'All'; // Default filter state
 
@@ -36,6 +36,7 @@ class IdeasIndex extends Component
         $user = Auth::user();
 
         // 2. Toggle Logic
+        // Checks if the user has already voted using the isVotedBy helper on the Idea model
         if ($idea->isVotedBy($user)) {
             // UNVOTE: User has voted, so detach (remove) the vote
             $idea->votes()->detach($user);
@@ -51,11 +52,11 @@ class IdeasIndex extends Component
     {
         $ideas = Idea::withCount('votes')
             ->with('user')
-            // NEW: Apply Search Filter (searches within the title)
+            // Apply Search Filter (searches within the title)
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%'.$this->search.'%');
             })
-            // NEW: Apply Status Filter (framework for future use)
+            // Apply Status Filter (framework for future use)
             ->when($this->statusFilter && $this->statusFilter !== 'All', function ($query) {
                 // When you add a 'status' column, uncomment and modify this line:
                 // $query->where('status', $this->statusFilter); 

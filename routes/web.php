@@ -32,6 +32,24 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('idea.index');
     })->name('dashboard');
     
+    
+    // === MISSING PROFILE/SETTINGS PLACEHOLDER ROUTES (Required by Layout) ===
+    
+    // FIX: Placeholder for 'profile.edit' to resolve sidebar crash
+    Route::get('/profile/settings', function () {
+        return view('dashboard');
+    })->name('profile.edit');
+    
+    // FIX: Placeholder for 'profile.update' (used by forms)
+    Route::put('/profile/update', function () {
+        return redirect()->back();
+    })->name('profile.update');
+    
+    // FIX: Placeholder for 'profile.destroy' (used by forms)
+    Route::delete('/profile/delete', function () {
+        return redirect()->route('idea.index');
+    })->name('profile.destroy');
+
 });
 
 

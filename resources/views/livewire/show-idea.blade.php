@@ -10,7 +10,7 @@
         
         {{-- Vote Count Section (Always visible) --}}
         <div class="text-center px-4 py-2 bg-gray-100 rounded-xl flex-shrink-0">
-            <div class="text-2xl font-bold text-blue-500">{{ $idea->votes()->count() }}</div>
+            <div class="text-2xl font-bold text-gray-800">{{ $idea->votes()->count() }}</div>
             <div class="text-xs text-gray-500">Votes</div>
         </div>
 
@@ -111,14 +111,13 @@
         {{-- END COMMENT FORM --}}
 
         {{-- Comment Loop --}}
-        {{-- Comment Loop --}}
         <div class="space-y-6">
             @forelse ($comments as $comment)
                 <div class="p-4 bg-white border rounded-lg shadow-sm">
                     <div class="flex justify-between items-center">
                         <span class="font-semibold">{{ $comment->user->name }}</span>
                         
-                        {{-- NEW: DELETE BUTTON (VISIBLE IF POLICY PASSES) --}}
+                        {{-- DELETE BUTTON (Functional and Styled) --}}
                         @can('delete', $comment)
                             <button 
                                 wire:click="deleteComment({{ $comment->id }})" 
@@ -128,8 +127,7 @@
                                 Delete
                             </button>
                         @endcan
-                        {{-- END NEW BUTTON --}}
-
+                        
                         <span class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
                     </div>
                     <p class="mt-2 text-gray-700">

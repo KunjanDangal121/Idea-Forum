@@ -2,9 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\Comment;
 use App\Models\Idea;
 use Livewire\Component;
-use App\Models\Comment;
 
 class ShowIdea extends Component
 {
@@ -53,11 +53,6 @@ class ShowIdea extends Component
         
         $this->isEditing = true;
     }
-
-    public function toggleEdit()
-    {
-        $this->isEditing = !$this->isEditing;
-    }
     
     /**
      * Toggles the $isEditing property to hide the form without saving.
@@ -99,7 +94,7 @@ class ShowIdea extends Component
 
 
     // ====================================================================
-    // Comment Functionality Methods (Unchanged)
+    // Comment Functionality Methods
     // ====================================================================
 
     public function postComment()
@@ -121,6 +116,9 @@ class ShowIdea extends Component
         return redirect(request()->header('Referer')); 
     }
 
+    /**
+     * Deletes a comment after authorization check.
+     */
     public function deleteComment(Comment $comment)
     {
         // 1. Authorization Check: Throws an exception if the policy fails
@@ -129,10 +127,13 @@ class ShowIdea extends Component
         // 2. Action: Delete the comment
         $comment->delete();
 
-        // 3. Feedback and refresh component (no redirect needed, just refresh the data)
+        // 3. Feedback and refresh component
         session()->flash('success', 'Comment deleted successfully!');
     }
 
+    /**
+     * Deletes the idea after authorization check.
+     */
     public function deleteIdea()
     {
         $this->authorize('delete', $this->idea);

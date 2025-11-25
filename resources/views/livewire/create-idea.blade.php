@@ -31,17 +31,17 @@
                 @error('description') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            {{-- SUBMIT BUTTON --}}
-            <div class="flex justify-end">
-                <button 
-                    type="submit" 
-                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-150 ease-in-out disabled:opacity-50"
-                    {{-- This disables the button until validation passes --}}
-                    wire:loading.attr="disabled"
-                >
-                    Submit Idea
-                </button>
-            </div>
-        </form>
-    </div>
+{{-- SUBMIT BUTTON --}}
+            <div class="flex justify-end">
+                <button 
+                    type="submit" 
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-150 ease-in-out disabled:opacity-50"
+                    {{-- This disables the button until validation passes --}}
+                    wire:loading.attr="disabled"
+                >
+                    Submit Idea
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
