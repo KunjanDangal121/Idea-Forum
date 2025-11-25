@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Idea;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 
 class IdeasIndex extends Component
 {
@@ -20,6 +21,30 @@ class IdeasIndex extends Component
         if ($property === 'search' || $property === 'statusFilter') {
             $this->resetPage();
         }
+    }
+
+    /**
+     * Toggles a vote for a given idea.
+     */
+    public function vote(Idea $idea)
+    {
+        // 1. Authorization Check: Redirect guests to login page
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+
+        // 2. Toggle Logic
+        if ($idea->isVotedBy($user)) {
+            // UNVOTE: User has voted, so detach (remove) the vote
+            $idea->votes()->detach($user);
+        } else {
+            // VOTE: User has not voted, so attach (add) the vote
+            $idea->votes()->attach($user);
+        }
+        
+        // Livewire automatically refreshes the component to show the new count!
     }
 
     public function render()

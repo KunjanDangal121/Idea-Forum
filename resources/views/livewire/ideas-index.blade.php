@@ -39,11 +39,15 @@
     <div class="space-y-4">
         @forelse ($ideas as $idea)
             <div class="p-6 bg-white border rounded-lg shadow-sm flex space-x-4">
-                {{-- Vote Count --}}
-                <div class="text-center px-4 py-2 bg-gray-100 rounded-xl">
-                    <div class="text-2xl font-bold text-blue-500">{{ $idea->votes_count }}</div>
-                    <div class="text-xs text-gray-500">Votes</div>
-                </div>
+                {{-- Vote Count: Make the block clickable and conditional --}}
+    <div 
+        wire:click="vote({{ $idea->id }})" 
+        class="text-center px-4 py-2 rounded-xl flex-shrink-0 cursor-pointer transition ease-in-out duration-150
+            {{ $idea->isVotedBy(auth()->user()) ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200' }}"
+    >
+        <div class="text-2xl font-bold">{{ $idea->votes_count }}</div>
+        <div class="text-xs">Votes</div>
+    </div>
 
                 {{-- Idea Content --}}
                 <div class="flex-1">
