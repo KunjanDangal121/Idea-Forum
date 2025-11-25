@@ -1,31 +1,43 @@
 <?php
 
+use App\Livewire\CreateIdea;
 use App\Livewire\IdeasIndex;
 use App\Livewire\ShowIdea;
 use Illuminate\Support\Facades\Route;
 
-// 1. FIX: Define the 'home' route. Starter kits like Breeze/Jetstream
-//    redirect here after successful login/registration. We point it to the Idea Index.
+// =======================================================
+// A. FIXES AND UNPROTECTED (Public) Routes
+// =======================================================
+
+// FIX: Defines the 'home' route used by authentication scaffolding.
 Route::get('/home', function () {
     return redirect()->route('idea.index');
 })->name('home');
 
-// 2. LIVEWIRE: Idea Index Page (Your Homepage)
+// LIVEWIRE: Idea Index Page (Your Homepage)
 Route::get('/', IdeasIndex::class)->name('idea.index');
 
-// 3. LIVEWIRE: Idea Detail Page (The Show Page)
-Route::get('/ideas/{idea:id}', ShowIdea::class)->name('idea.show');
 
+// =======================================================
+// B. PROTECTED ROUTES (Requiring Login)
+// =======================================================
 
-// 4. AUTHENTICATION (Dashboard/Profile Routes)
-//    These routes are typically included if you ran 'php artisan breeze:install' or similar.
-Route::middleware([
-    'auth', // <--- MUST be 'auth', not 'auth:sanctum'
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
+Route::middleware(['auth'])->group(function () {
+    
+    // 1. LIVEWIRE: The Create Idea Form Page (STATIC ROUTE - Must come first)
+    Route::get('/ideas/create', CreateIdea::class)->name('idea.create');
+    
+    // 2. AUTHENTICATION: Dashboard (redirected to your index page)
     Route::get('/dashboard', function () {
-        // CHANGE THIS LINE to redirect to your Idea Index Page
         return redirect()->route('idea.index');
     })->name('dashboard');
+    
 });
+
+
+// =======================================================
+// C. DYNAMIC PUBLIC ROUTES (Must come last to avoid conflicts)
+// =======================================================
+
+// LIVEWIRE: Idea Detail Page (The Show Page)
+Route::get('/ideas/{idea:id}', ShowIdea::class)->name('idea.show');

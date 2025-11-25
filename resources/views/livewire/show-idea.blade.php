@@ -1,46 +1,85 @@
-<div class="max-w-4xl mx-auto py-6 px-4">
-    
-    {{-- Back Button Placeholder --}}
+<div class="show-idea-wrapper max-w-4xl mx-auto py-6 px-4"> {{-- START: SINGLE ROOT ELEMENT --}}
+
+    {{-- Back Button --}}
     <div class="mb-4">
         <a href="{{ route('idea.index') }}" class="text-sm text-gray-500 hover:text-blue-500">&lt; All Ideas</a>
     </div>
 
-    {{-- IDEA DETAIL CARD --}}
+    {{-- IDEA DETAIL CARD BLOCK --}}
     <div class="bg-white border rounded-lg shadow-sm p-8 flex space-x-6">
         
-        {{-- Vote Count Section (Reusing Index Logic) --}}
+        {{-- Vote Count Section (Always visible) --}}
         <div class="text-center px-4 py-2 bg-gray-100 rounded-xl flex-shrink-0">
             <div class="text-2xl font-bold text-blue-500">{{ $idea->votes()->count() }}</div>
             <div class="text-xs text-gray-500">Votes</div>
         </div>
 
-        {{-- Idea Content --}}
         <div class="flex-1">
-            <h1 class="text-2xl font-bold mb-2">{{ $idea->title }}</h1>
             
-            <div class="text-gray-600 mb-4">
-                {{ $idea->description }}
-            </div>
+            {{-- 1. EDIT FORM VIEW --}}
+            @if ($isEditing)
+                <form wire:submit.prevent="updateIdea" class="w-full">
+                    <div class="mb-4">
+                        <label for="editedTitle" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input wire:model.defer="editedTitle" type="text" id="editedTitle" class="w-full p-2 border rounded" required>
+                        @error('editedTitle') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="editedDescription" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea wire:model.defer="editedDescription" id="editedDescription" rows="6" class="w-full p-2 border rounded resize-none" required></textarea>
+                        @error('editedDescription') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div class="flex justify-end space-x-2">
+                        {{-- The Cancel button needs to be type="button" to prevent form submission --}}
+                        <button wire:click.prevent="cancelEdit" type="button" class="bg-gray-300 text-gray-700 px-3 py-1 text-sm rounded hover:bg-gray-400">Cancel</button>
+                        <button type="submit" class="bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700">Update Idea</button>
+                    </div>
+                </form>
+            @endif
 
-            <div class="mt-4 text-sm text-gray-400">
-                Posted by {{ $idea->user->name }} • {{ $idea->created_at->diffForHumans() }}
-            </div>
-            
-            {{-- Action Buttons Placeholder (For your friend to style later) --}}
-            <div class="mt-4 space-x-2">
-                <button class="bg-blue-500 text-white px-3 py-1 text-sm rounded">Edit</button>
-                <button class="bg-red-500 text-white px-3 py-1 text-sm rounded">Delete</button>
-            </div>
+            {{-- 2. STATIC VIEW (Visible unless editing) --}}
+            @unless ($isEditing)
+                <h1 class="text-2xl font-bold mb-2">{{ $idea->title }}</h1>
+                
+                <div class="text-gray-600 mb-4">
+                    {{ $idea->description }}
+                </div>
+
+                <div class="mt-4 text-sm text-gray-400">
+                    Posted by {{ $idea->user->name }} • {{ $idea->created_at->diffForHumans() }}
+                </div>
+                
+                {{-- Action Buttons --}}
+                <div class="mt-4 space-x-2">
+                    @can('update', $idea)
+                        <button 
+                            wire:click="startEdit" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-sm rounded transition"
+                        >
+                            Edit
+                        </button>
+                        <button 
+                            wire:click="deleteIdea" 
+                            onclick="return confirm('Are you absolutely sure you want to delete this idea? This cannot be undone.')"
+                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm rounded transition"
+                        >
+                            Delete
+                        </button>
+                    @endcan
+                </div>
+            @endunless
+
         </div>
     </div>
 
-    {{-- COMMENTS SECTION --}}
+    {{-- COMMENTS SECTION (Always visible) --}}
     <div class="mt-10">
         <h2 class="text-xl font-semibold mb-4">
             Comments ({{ $comments->count() }})
         </h2>
 
-        {{-- NEW: COMMENT FORM START --}}
+        {{-- COMMENT FORM START (Only visible if logged in) --}}
         @auth
             <div class="p-4 mb-8 bg-white border rounded-lg shadow-md">
                 <form wire:submit.prevent="postComment" action="#" method="POST">
@@ -52,9 +91,7 @@
                         class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 text-gray-700 resize-none"
                     ></textarea>
                     
-                    @error('newComment') 
-                        <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> 
-                    @enderror
+                    @error('newComment') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
 
                     <div class="flex justify-end mt-3">
                         <button 
@@ -90,4 +127,5 @@
             @endforelse
         </div>
     </div>
-</div>
+
+</div> {{-- END: SINGLE ROOT ELEMENT --}}

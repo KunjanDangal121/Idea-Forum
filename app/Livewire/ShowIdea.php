@@ -7,58 +7,137 @@ use Livewire\Component;
 
 class ShowIdea extends Component
 {
-    // Property set via Route Model Binding (from the URL /ideas/{idea:id})
+    // === Core Idea Properties ===
     public Idea $idea; 
 
-    // Property bound to the comment form's textarea
+    // === Comment Form Properties ===
     public string $newComment = ''; 
-    
-    // Validation rules for the new comment body
+
+    // === Edit Form Properties ===
+    public bool $isEditing = false; // Controls whether the form is visible
+    public string $editedTitle = '';
+    public string $editedDescription = '';
+
+    // === Validation Rules ===
     protected array $rules = [
+        // Rules for the Comment Form
         'newComment' => 'required|min:4|max:255',
+        
+        // Rules for the Edit Form (Idea Update)
+        'editedTitle' => 'required|min:10|max:100',
+        'editedDescription' => 'required|min:20',
     ];
 
     public function mount(Idea $idea)
     {
-        // Set the property based on the route binding
+        // Set the core property based on the route binding
         $this->idea = $idea;
+        
+        // Initialize the edit form properties with the current idea data
+        $this->editedTitle = $idea->title;
+        $this->editedDescription = $idea->description;
+    }
+
+    // ====================================================================
+    // Edit Functionality Methods
+    // ====================================================================
+
+    /**
+     * Toggles the $isEditing property to show the form.
+     */
+    public function startEdit()
+    {
+        // Use policy check for backend safety
+        $this->authorize('update', $this->idea); 
+        
+        $this->isEditing = true;
+    }
+
+    public function toggleEdit()
+    {
+        $this->isEditing = !$this->isEditing;
+    }
+    
+    /**
+     * Toggles the $isEditing property to hide the form without saving.
+     */
+    public function cancelEdit()
+    {
+        $this->isEditing = false;
+        
+        // Reset the form fields back to the original idea data
+        $this->editedTitle = $this->idea->title;
+        $this->editedDescription = $this->idea->description;
     }
 
     /**
-     * Handles the comment form submission.
+     * Handles the form submission for updating the idea.
      */
+    public function updateIdea()
+    {
+        // 1. Authorization & Validation
+        $this->authorize('update', $this->idea); 
+        $this->validate([
+            'editedTitle' => 'required|min:10|max:100',
+            'editedDescription' => 'required|min:20',
+        ]);
+
+        // 2. Action: Update the Idea in the database
+        $this->idea->update([
+            'title' => $this->editedTitle,
+            'description' => $this->editedDescription,
+        ]);
+        
+        // 3. Cleanup and Feedback
+        $this->isEditing = false; // Hide the form
+        session()->flash('success', 'Idea updated successfully!');
+        
+        // Force Livewire to refresh the data on the page
+        $this->idea->refresh();
+    }
+
+
+    // ====================================================================
+    // Comment Functionality Methods (Unchanged)
+    // ====================================================================
+
     public function postComment()
     {
-        // 1. Security Check: Stop if the user is not logged in
         if (!auth()->check()) {
             session()->flash('error', 'You must be logged in to post a comment.');
             return redirect()->back();
         }
 
-        // 2. Validate the form data
-        $this->validate();
+        $this->validate(['newComment' => 'required|min:4|max:255']);
 
-        // 3. Create the Comment and associate it with the current Idea
         $this->idea->comments()->create([
             'user_id' => auth()->id(),
             'body' => $this->newComment,
         ]);
         
-        // 4. Clear the form field for a clean user experience
         $this->newComment = '';
-
-        // 5. Success feedback
         session()->flash('success', 'Comment posted successfully!');
-
-        // 6. Redirect back to the same page to ensure the Livewire state is fully refreshed 
-        //    and the new comment appears without a full page reload.
         return redirect(request()->header('Referer')); 
     }
+
+    public function deleteIdea()
+    {
+        $this->authorize('delete', $this->idea);
+
+        $this->idea->delete();
+
+        session()->flash('success', 'Idea deleted successfully!');
+
+        return redirect()->route('idea.index');
+    }
+
+    // ====================================================================
+    // Rendering
+    // ====================================================================
     
     public function render()
     {
         return view('livewire.show-idea', [
-            // Eager load comments and the users who posted them
             'comments' => $this->idea->comments()->with('user')->get(),
         ]);
     }
