@@ -1,35 +1,61 @@
 <?php
 
-use App\Livewire\Settings\Appearance;
-use App\Livewire\Settings\Password;
-use App\Livewire\Settings\Profile;
-use App\Livewire\Settings\TwoFactor;
+use App\Livewire\CreateIdea;
+use App\Livewire\IdeasIndex;
+use App\Livewire\ShowIdea;
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return view('welcome');
+// =======================================================
+// A. FIXES AND UNPROTECTED (Public) Routes
+// =======================================================
+
+// FIX: Defines the 'home' route used by authentication scaffolding.
+Route::get('/home', function () {
+    return redirect()->route('idea.index');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// LIVEWIRE: Idea Index Page (Your Homepage)
+Route::get('/', IdeasIndex::class)->name('idea.index');
+
+
+// =======================================================
+// B. PROTECTED ROUTES (Requiring Login)
+// =======================================================
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+    
+    // 1. LIVEWIRE: The Create Idea Form Page (STATIC ROUTE)
+    Route::get('/ideas/create', CreateIdea::class)->name('idea.create');
+    
+    // 2. AUTHENTICATION: Dashboard (redirected to your index page)
+    Route::get('/dashboard', function () {
+        return redirect()->route('idea.index');
+    })->name('dashboard');
+    
+    
+    // === NEW: MISSING PROFILE/SETTINGS PLACEHOLDER ROUTES ===
+    
+    // FIX: Placeholder for 'profile.edit' to resolve sidebar crash
+    Route::get('/profile/settings', function () {
+        return view('dashboard');
+    })->name('profile.edit');
+    
+    // FIX: Placeholder for 'profile.update' (used by forms)
+    Route::put('/profile/update', function () {
+        return redirect()->back();
+    })->name('profile.update');
+    
+    // FIX: Placeholder for 'profile.destroy' (used by forms)
+    Route::delete('/profile/delete', function () {
+        return redirect()->route('idea.index');
+    })->name('profile.destroy');
 
-    Route::get('settings/profile', Profile::class)->name('profile.edit');
-    Route::get('settings/password', Password::class)->name('user-password.edit');
-    Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
-
-    Route::get('settings/two-factor', TwoFactor::class)
-        ->middleware(
-            when(
-                Features::canManageTwoFactorAuthentication()
-                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
-                ['password.confirm'],
-                [],
-            ),
-        )
-        ->name('two-factor.show');
 });
+
+
+// =======================================================
+// C. DYNAMIC PUBLIC ROUTES (Must come last to avoid conflicts)
+// =======================================================
+
+// LIVEWIRE: Idea Detail Page
+Route::get('/ideas/{idea:id}', ShowIdea::class)->name('idea.show');
