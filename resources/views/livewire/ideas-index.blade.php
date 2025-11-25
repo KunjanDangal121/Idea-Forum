@@ -3,7 +3,7 @@
     {{-- Search and Filter Bar --}}
     <div class="flex items-center space-x-3 mb-6">
         
-        {{-- Filter Dropdown --}}
+        {{-- Filter Dropdown (Integrating logic from main) --}}
         <select 
             wire:model.live="statusFilter"
             name="category" 
@@ -15,7 +15,7 @@
             <option value="Complete">Complete</option>
         </select>
         
-        {{-- Search Input --}}
+        {{-- Search Input (Integrating logic from main) --}}
         <input 
             wire:model.live.debounce.300ms="search" 
             type="search" 
@@ -24,14 +24,14 @@
         >
     </div>
 
-    {{-- Submit Idea Button --}}
+    {{-- Submit Idea Button (Using professional styling) --}}
     <div class="mb-8 flex justify-end">
         @auth
             <a href="{{ route('idea.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-xl transition duration-150 ease-in shadow-lg">
                 Submit New Idea
             </a>
         @else
-             <p class="text-sm text-gray-500">Please log in to submit an idea.</p>
+            <p class="text-sm text-gray-500">Please log in to submit an idea.</p>
         @endauth
     </div>
 
@@ -106,11 +106,12 @@
             </div>
         @empty
             <div class="text-center p-10 text-gray-500 bg-white border rounded-lg">
-                No ideas found matching your search.
+                No ideas found matching your criteria.
             </div>
         @endforelse
     </div>
 
+    {{-- Pagination Links --}}
     <div class="mt-8">
         {{ $ideas->links() }}
     </div>

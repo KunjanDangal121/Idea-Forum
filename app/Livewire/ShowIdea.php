@@ -21,13 +21,17 @@ class ShowIdea extends Component
 
     // === Validation Rules ===
     protected array $rules = [
+        // Rules for the Comment Form
         'newComment' => 'required|min:4|max:255',
+        
+        // Rules for the Edit Form (Idea Update)
         'editedTitle' => 'required|min:10|max:100',
         'editedDescription' => 'required|min:20',
     ];
 
     public function mount(Idea $idea)
     {
+        // Set the core property based on the route binding
         $this->idea = $idea;
         
         // Initialize the edit form properties with the current idea data
@@ -39,40 +43,58 @@ class ShowIdea extends Component
     // Edit Functionality Methods
     // ====================================================================
 
+    /**
+     * Toggles the $isEditing property to show the form.
+     */
     public function startEdit()
     {
+        // Use policy check for backend safety
         $this->authorize('update', $this->idea); 
+        
         $this->isEditing = true;
     }
     
+    /**
+     * Toggles the $isEditing property to hide the form without saving.
+     */
     public function cancelEdit()
     {
         $this->isEditing = false;
+        
+        // Reset the form fields back to the original idea data
         $this->editedTitle = $this->idea->title;
         $this->editedDescription = $this->idea->description;
     }
 
+    /**
+     * Handles the form submission for updating the idea.
+     */
     public function updateIdea()
     {
+        // 1. Authorization & Validation
         $this->authorize('update', $this->idea); 
         $this->validate([
             'editedTitle' => 'required|min:10|max:100',
             'editedDescription' => 'required|min:20',
         ]);
 
+        // 2. Action: Update the Idea in the database
         $this->idea->update([
             'title' => $this->editedTitle,
             'description' => $this->editedDescription,
         ]);
         
+        // 3. Cleanup and Feedback
         $this->isEditing = false; // Hide the form
         session()->flash('success', 'Idea updated successfully!');
+        
+        // Force Livewire to refresh the data on the page
         $this->idea->refresh();
     }
 
 
     // ====================================================================
-    // Delete and Comment Functionality
+    // Comment Functionality Methods
     // ====================================================================
 
     public function postComment()
@@ -94,18 +116,32 @@ class ShowIdea extends Component
         return redirect(request()->header('Referer')); 
     }
 
+    /**
+     * Deletes a comment after authorization check.
+     */
     public function deleteComment(Comment $comment)
     {
+        // 1. Authorization Check: Throws an exception if the policy fails
         $this->authorize('delete', $comment);
+
+        // 2. Action: Delete the comment
         $comment->delete();
+
+        // 3. Feedback and refresh component
         session()->flash('success', 'Comment deleted successfully!');
     }
 
+    /**
+     * Deletes the idea after authorization check.
+     */
     public function deleteIdea()
     {
         $this->authorize('delete', $this->idea);
+
         $this->idea->delete();
+
         session()->flash('success', 'Idea deleted successfully!');
+
         return redirect()->route('idea.index');
     }
 

@@ -117,7 +117,7 @@
                     <div class="flex justify-between items-center">
                         <span class="font-semibold">{{ $comment->user->name }}</span>
                         
-                        {{-- DELETE BUTTON --}}
+                        {{-- DELETE BUTTON (Functional and Styled) --}}
                         @can('delete', $comment)
                             <button 
                                 wire:click="deleteComment({{ $comment->id }})" 

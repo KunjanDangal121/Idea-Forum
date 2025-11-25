@@ -24,7 +24,7 @@ Route::get('/', IdeasIndex::class)->name('idea.index');
 
 Route::middleware(['auth'])->group(function () {
     
-    // 1. LIVEWIRE: The Create Idea Form Page (STATIC ROUTE)
+    // 1. LIVEWIRE: The Create Idea Form Page (STATIC ROUTE - Must come first)
     Route::get('/ideas/create', CreateIdea::class)->name('idea.create');
     
     // 2. AUTHENTICATION: Dashboard (redirected to your index page)
@@ -33,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
     
     
-    // === NEW: MISSING PROFILE/SETTINGS PLACEHOLDER ROUTES ===
+    // === MISSING PROFILE/SETTINGS PLACEHOLDER ROUTES (Required by Layout) ===
     
     // FIX: Placeholder for 'profile.edit' to resolve sidebar crash
     Route::get('/profile/settings', function () {
@@ -57,5 +57,5 @@ Route::middleware(['auth'])->group(function () {
 // C. DYNAMIC PUBLIC ROUTES (Must come last to avoid conflicts)
 // =======================================================
 
-// LIVEWIRE: Idea Detail Page
+// LIVEWIRE: Idea Detail Page (The Show Page)
 Route::get('/ideas/{idea:id}', ShowIdea::class)->name('idea.show');
