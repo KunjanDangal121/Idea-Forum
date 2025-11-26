@@ -16,7 +16,11 @@ class Idea extends Model
         'user_id',
         'title',
         'description',
+<<<<<<< HEAD
+        'status_id', // Ensure this is fillable
+=======
         'status_id',
+>>>>>>> main
     ];
 
     // ====================================================================
@@ -29,11 +33,30 @@ class Idea extends Model
         return $this->belongsTo(User::class);
     }
 
-    // NEW RELATIONSHIP: An idea belongs to a Status (e.g., Open, Implemented)
+<<<<<<< HEAD
+    // NEW: Relationship to Status (THIS WAS LIKELY MISSING)
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
     }
+
+    // Relationship: An idea has many comments
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // Relationship: An idea has many Votes
+    public function votes(): BelongsToMany
+=======
+    // NEW RELATIONSHIP: An idea belongs to a Status (e.g., Open, Implemented)
+    public function status(): BelongsTo
+>>>>>>> main
+    {
+        return $this->belongsTo(Status::class);
+    }
+<<<<<<< HEAD
+=======
 
     // Relationship: An idea has many comments
     public function comments(): HasMany
@@ -62,4 +85,5 @@ class Idea extends Model
         // Checks the votes relationship for a matching user_id
         return $this->votes()->where('user_id', $user->id)->exists();
     }
+>>>>>>> main
 }

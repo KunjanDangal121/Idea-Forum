@@ -72,6 +72,12 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+    {{-- COMMENTS SECTION (Always visible) --}}
+    {{-- Added id="comments" here --}}
+<div id="comments" class="mt-10"> 
+    <h2 class="text-xl font-semibold mb-4">
+=======
     {{-- NEW: ADMIN STATUS UPDATE DROPDOWN (Only visible to Admin ID 12) --}}
     @if (auth()->id() === 12)
         <div class="mt-8 mb-6 p-4 bg-white border rounded-lg shadow-sm">
@@ -99,6 +105,7 @@
     {{-- COMMENTS SECTION --}}
     <div class="mt-10">
         <h2 class="text-xl font-semibold mb-4">
+>>>>>>> main
             Comments ({{ $comments->count() }})
         </h2>
 

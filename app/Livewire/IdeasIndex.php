@@ -2,16 +2,61 @@
 
 namespace App\Livewire;
 
+use App\Models\Status;
 use App\Models\Idea;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+<<<<<<< HEAD
+=======
 use App\Models\Status;
+>>>>>>> main
 
 class IdeasIndex extends Component
 {
     use WithPagination;
 
+<<<<<<< HEAD
+    // 1. Properties to bind to search and filter inputs
+    public string $search = '';
+    public string $statusFilter = 'All'; 
+
+    // 2. Reset pagination when filters change
+    public function updated($property)
+    {
+        if ($property === 'search' || $property === 'statusFilter') {
+            $this->resetPage();
+        }
+    }
+
+    /**
+     * 3. Toggles a vote for a given idea.
+     */
+    public function vote(Idea $idea)
+    {
+        // Authorization Check
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+
+        // Toggle Logic
+        if ($idea->isVotedBy($user)) {
+            $idea->votes()->detach($user);
+        } else {
+            $idea->votes()->attach($user);
+        }
+    }
+
+    public function render()
+    {
+        // 4. Fetch all statuses for the dropdown
+        $statuses = Status::all(); 
+
+        $ideas = Idea::withCount(['votes', 'comments'])
+            ->with(['user', 'status'])
+=======
     // Properties to bind to search and filter inputs
     public string $search = '';
     public string $statusFilter = 'All'; // Default filter state
@@ -56,6 +101,7 @@ class IdeasIndex extends Component
         // UPDATE THIS BLOCK
         $ideas = Idea::withCount(['votes', 'comments'])
             ->with(['user', 'status']) 
+>>>>>>> main
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%');
             })
@@ -67,6 +113,7 @@ class IdeasIndex extends Component
             ->latest()
             ->simplePaginate(10);
 
+        // 5. Pass both $ideas and $statuses to the view
         return view('livewire.ideas-index', [
             'ideas' => $ideas,
             'statuses' => $statuses,
