@@ -2,7 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\Comment;
 use App\Models\Idea;
+use App\Models\Status; // <-- NEW: Required for status dropdown
 use Livewire\Component;
 
 class ShowIdea extends Component
@@ -14,91 +16,90 @@ class ShowIdea extends Component
     public string $newComment = ''; 
 
     // === Edit Form Properties ===
-    public bool $isEditing = false; // Controls whether the form is visible
+    public bool $isEditing = false; 
     public string $editedTitle = '';
     public string $editedDescription = '';
 
+    // === NEW: Status Management Properties ===
+    public $statuses; // Holds the list of all statuses (Open, Closed, etc.)
+
     // === Validation Rules ===
     protected array $rules = [
-        // Rules for the Comment Form
         'newComment' => 'required|min:4|max:255',
-        
-        // Rules for the Edit Form (Idea Update)
         'editedTitle' => 'required|min:10|max:100',
         'editedDescription' => 'required|min:20',
     ];
 
     public function mount(Idea $idea)
     {
-        // Set the core property based on the route binding
         $this->idea = $idea;
         
-        // Initialize the edit form properties with the current idea data
+        // Initialize edit form properties
         $this->editedTitle = $idea->title;
         $this->editedDescription = $idea->description;
+
+        // NEW: Fetch all statuses for the admin dropdown
+        $this->statuses = Status::all(); 
     }
 
     // ====================================================================
-    // Edit Functionality Methods
+    // NEW: Admin Status Management
     // ====================================================================
 
-    /**
-     * Toggles the $isEditing property to show the form.
-     */
+    public function updateStatus($newStatusId)
+    {
+        // 1. Admin Authorization Check (Hardcoded to User ID 12 for Capstone)
+        if (auth()->id() !== 12) { 
+            session()->flash('error', 'You are not authorized to change the status.');
+            return;
+        }
+
+        // 2. Update Database
+        $this->idea->update(['status_id' => $newStatusId]);
+
+        // 3. Feedback & Refresh
+        session()->flash('success', 'Status updated successfully!');
+        $this->idea->refresh(); // Updates the status badge on the UI immediately
+    }
+
+    // ====================================================================
+    // Edit Functionality Methods (Preserved)
+    // ====================================================================
+
     public function startEdit()
     {
-        // Use policy check for backend safety
         $this->authorize('update', $this->idea); 
-        
         $this->isEditing = true;
     }
-
-    public function toggleEdit()
-    {
-        $this->isEditing = !$this->isEditing;
-    }
     
-    /**
-     * Toggles the $isEditing property to hide the form without saving.
-     */
     public function cancelEdit()
     {
         $this->isEditing = false;
-        
-        // Reset the form fields back to the original idea data
+        // Reset fields to current data
         $this->editedTitle = $this->idea->title;
         $this->editedDescription = $this->idea->description;
     }
 
-    /**
-     * Handles the form submission for updating the idea.
-     */
     public function updateIdea()
     {
-        // 1. Authorization & Validation
         $this->authorize('update', $this->idea); 
         $this->validate([
             'editedTitle' => 'required|min:10|max:100',
             'editedDescription' => 'required|min:20',
         ]);
 
-        // 2. Action: Update the Idea in the database
         $this->idea->update([
             'title' => $this->editedTitle,
             'description' => $this->editedDescription,
         ]);
         
-        // 3. Cleanup and Feedback
-        $this->isEditing = false; // Hide the form
+        $this->isEditing = false; 
         session()->flash('success', 'Idea updated successfully!');
-        
-        // Force Livewire to refresh the data on the page
         $this->idea->refresh();
     }
 
-
     // ====================================================================
-    // Comment Functionality Methods (Unchanged)
+    // Comment & Delete Functionality (Preserved)
     // ====================================================================
 
     public function postComment()
@@ -120,14 +121,18 @@ class ShowIdea extends Component
         return redirect(request()->header('Referer')); 
     }
 
+    public function deleteComment(Comment $comment)
+    {
+        $this->authorize('delete', $comment);
+        $comment->delete();
+        session()->flash('success', 'Comment deleted successfully!');
+    }
+
     public function deleteIdea()
     {
         $this->authorize('delete', $this->idea);
-
         $this->idea->delete();
-
         session()->flash('success', 'Idea deleted successfully!');
-
         return redirect()->route('idea.index');
     }
 
