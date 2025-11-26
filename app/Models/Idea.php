@@ -16,6 +16,7 @@ class Idea extends Model
         'user_id',
         'title',
         'description',
+        'status_id', // Ensure this is fillable
     ];
 
     // Relationship: An idea belongs to a User
@@ -24,8 +25,19 @@ class Idea extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Relationship: An idea has many Votes (Upvotes)
-    // We specifically name the table 'upvotes' because of your migration name
+    // NEW: Relationship to Status (THIS WAS LIKELY MISSING)
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    // Relationship: An idea has many comments
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // Relationship: An idea has many Votes
     public function votes(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'upvotes');
@@ -38,10 +50,5 @@ class Idea extends Model
             return false;
         }
         return $this->votes()->where('user_id', $user->id)->exists();
-    }
-
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
     }
 }

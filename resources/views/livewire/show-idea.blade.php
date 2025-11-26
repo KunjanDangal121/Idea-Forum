@@ -74,8 +74,9 @@
     </div>
 
     {{-- COMMENTS SECTION (Always visible) --}}
-    <div class="mt-10">
-        <h2 class="text-xl font-semibold mb-4">
+    {{-- Added id="comments" here --}}
+<div id="comments" class="mt-10"> 
+    <h2 class="text-xl font-semibold mb-4">
             Comments ({{ $comments->count() }})
         </h2>
 
