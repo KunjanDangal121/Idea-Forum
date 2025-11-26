@@ -11,8 +11,11 @@
             class="rounded-xl border border-gray-300 px-4 py-2 text-sm focus:ring-blue-500 w-44"
         >
             <option value="All">All Categories</option>
-            <option value="Open">Open</option>
-            <option value="Complete">Complete</option>
+            
+            {{-- Dynamic Loop over Statuses --}}
+            @foreach ($statuses as $status)
+                <option value="{{ $status->name }}">{{ $status->name }}</option>
+            @endforeach
         </select>
         
         {{-- Search Input (Integrating logic from main) --}}
@@ -88,8 +91,8 @@
                                 
                                 {{-- Placeholder for Status Tag (Static for now) --}}
                                 <div class="bg-green-100 text-green-700 text-xxs font-bold uppercase leading-none rounded-full text-center w-28 h-7 flex items-center justify-center shadow-sm">
-                                    Open
-                                </div>
+    {{ $idea->status->name }}
+</div>
                             </div>
                             
                             {{-- Comment Count --}}
@@ -97,8 +100,8 @@
                                 
                                 {{-- Placeholder for Comment Count: Assuming you will add a comment_count relationship later --}}
                                 <a href="{{ route('idea.show', $idea) }}" class="hover:text-gray-900 transition duration-150 ease-in">
-                                    3 Comments 
-                                </a>
+    {{ $idea->comments_count }} comments
+</a>
                             </div>
                         </div>
                     </div>

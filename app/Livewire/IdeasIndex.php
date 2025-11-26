@@ -6,6 +6,7 @@ use App\Models\Idea;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Status;
 
 class IdeasIndex extends Component
 {
@@ -48,24 +49,27 @@ class IdeasIndex extends Component
         // Livewire automatically refreshes the component to show the new count!
     }
 
-    public function render()
+  public function render()
     {
-        $ideas = Idea::withCount('votes')
-            ->with('user')
-            // Apply Search Filter (searches within the title)
+        $statuses = \App\Models\Status::all();
+
+        // UPDATE THIS BLOCK
+        $ideas = Idea::withCount(['votes', 'comments'])
+            ->with(['user', 'status']) 
             ->when($this->search, function ($query) {
-                $query->where('title', 'like', '%'.$this->search.'%');
+                $query->where('title', 'like', '%' . $this->search . '%');
             })
-            // Apply Status Filter (framework for future use)
             ->when($this->statusFilter && $this->statusFilter !== 'All', function ($query) {
-                // When you add a 'status' column, uncomment and modify this line:
-                // $query->where('status', $this->statusFilter); 
+                $query->whereHas('status', function ($statusQuery) {
+                     $statusQuery->where('name', $this->statusFilter);
+                });
             })
             ->latest()
             ->simplePaginate(10);
 
         return view('livewire.ideas-index', [
             'ideas' => $ideas,
+            'statuses' => $statuses,
         ]);
     }
 }

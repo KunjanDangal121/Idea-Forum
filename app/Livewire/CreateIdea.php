@@ -22,18 +22,15 @@ class CreateIdea extends Component
      */
     public function submitIdea()
     {
-        // 1. Validate the input against the rules
         $this->validate();
 
-        // 2. Create the Idea in the database
-        // The user is authenticated due to the 'auth' middleware on the route.
         Idea::create([
             'user_id' => auth()->id(),
             'title' => $this->title,
             'description' => $this->description,
+            'status_id' => 1, // <--- CRITICAL: Force status to 'Open'
         ]);
 
-        // 3. Send a success message and redirect to the index page
         session()->flash('success', 'Idea submitted successfully!');
         return redirect()->route('idea.index');
     }

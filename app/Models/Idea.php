@@ -16,33 +16,50 @@ class Idea extends Model
         'user_id',
         'title',
         'description',
+        'status_id',
     ];
 
-    // Relationship: An idea belongs to a User
+    // ====================================================================
+    // PRIMARY RELATIONSHIPS
+    // ====================================================================
+
+    // Relationship: An idea belongs to a User (the author)
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // RELATIONSHIP: An idea has many comments
+    // NEW RELATIONSHIP: An idea belongs to a Status (e.g., Open, Implemented)
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    // Relationship: An idea has many comments
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    // Relationship: An idea has many Votes (Upvotes)
-    // We specifically name the table 'upvotes' because of your migration name
+    // Relationship: An idea has many Votes (Upvotes) through the 'upvotes' pivot table
     public function votes(): BelongsToMany
     {
+        // This links the Idea to the User model via the 'upvotes' table
         return $this->belongsToMany(User::class, 'upvotes');
     }
     
-    // Helper: Check if a user voted
+    // ====================================================================
+    // HELPER METHODS
+    // ====================================================================
+    
+    // Helper: Check if a given user has voted on this specific idea
     public function isVotedBy(?User $user): bool
     {
+        // Returns false immediately if the user is a guest (null)
         if (!$user) {
             return false;
         }
+        // Checks the votes relationship for a matching user_id
         return $this->votes()->where('user_id', $user->id)->exists();
     }
 }
