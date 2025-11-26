@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Comment;
 use App\Models\Idea;
-use App\Models\Status; // <-- NEW: Required for status dropdown
+use App\Models\Status; 
 use Livewire\Component;
 
 class ShowIdea extends Component
