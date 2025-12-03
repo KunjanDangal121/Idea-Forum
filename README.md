@@ -9,6 +9,9 @@ Capstone Project: # Idea-Forum
 
 Designed with a premium Red Glass (Glassmorphism) aesthetic, Spark offers a seamless and visually striking user experience.
 
+## 📸 Preview of Spark
+![Homepage](public/screenshots/home.png)
+
 Feature Overview of Spark:
 
   - Idea Management: Users can submit, edit, and delete ideas.
