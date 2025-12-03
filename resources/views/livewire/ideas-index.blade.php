@@ -1,16 +1,9 @@
 <div class="max-w-6xl mx-auto pt-6 px-4 md:px-6">
     
-<<<<<<< HEAD
-    {{-- 1. Search and Filter Bar --}}
-    <div class="flex items-center space-x-3 mb-6">
-        
-        {{-- Filter Dropdown --}}
-=======
     {{-- Search and Filter Bar --}}
     <div class="flex items-center space-x-3 mb-6">
         
-        {{-- Filter Dropdown (Integrating logic from main) --}}
->>>>>>> main
+        {{-- Filter Dropdown --}}
         <select 
             wire:model.live="statusFilter"
             name="category" 
@@ -18,22 +11,12 @@
             class="rounded-xl border border-gray-300 px-4 py-2 text-sm focus:ring-blue-500 w-44"
         >
             <option value="All">All Categories</option>
-<<<<<<< HEAD
-            {{-- Loop through statuses passed from component --}}
-=======
-            
-            {{-- Dynamic Loop over Statuses --}}
->>>>>>> main
             @foreach ($statuses as $status)
                 <option value="{{ $status->name }}">{{ $status->name }}</option>
             @endforeach
         </select>
         
-<<<<<<< HEAD
         {{-- Search Input --}}
-=======
-        {{-- Search Input (Integrating logic from main) --}}
->>>>>>> main
         <input 
             wire:model.live.debounce.300ms="search" 
             type="search" 
@@ -42,31 +25,19 @@
         >
     </div>
 
-<<<<<<< HEAD
-    {{-- 2. Submit Idea Button --}}
-=======
-    {{-- Submit Idea Button (Using professional styling) --}}
->>>>>>> main
+    {{-- Submit Idea Button --}}
     <div class="mb-8 flex justify-end">
         @auth
             <a href="{{ route('idea.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-xl transition duration-150 ease-in shadow-lg">
                 Submit New Idea
             </a>
         @else
-<<<<<<< HEAD
              <p class="text-sm text-gray-500">Please log in to submit an idea.</p>
-=======
-            <p class="text-sm text-gray-500">Please log in to submit an idea.</p>
->>>>>>> main
         @endauth
     </div>
 
 
-<<<<<<< HEAD
-    {{-- 3. Idea List --}}
-=======
     {{-- IDEA LIST --}}
->>>>>>> main
     <div class="space-y-6">
         @forelse ($ideas as $idea)
             <div 
@@ -79,11 +50,7 @@
                     <div class="text-2xl font-bold text-gray-800">{{ $idea->votes_count }}</div>
                     <div class="text-gray-500 font-light text-xs uppercase mt-1">Votes</div>
                     
-<<<<<<< HEAD
                     {{-- Vote Button with Livewire Logic --}}
-=======
-                    {{-- Vote Button with Livewire Logic and Conditional Styling --}}
->>>>>>> main
                     <button
                         wire:click="vote({{ $idea->id }})"
                         class="w-full font-semibold text-xs uppercase rounded-xl transition duration-150 ease-in px-4 py-2 mt-4 cursor-pointer
@@ -98,11 +65,7 @@
                 {{-- IDEA CONTENT --}}
                 <div class="flex flex-1 px-4 py-6">
                     <div class="flex-none">
-<<<<<<< HEAD
                         {{-- User Avatar --}}
-=======
-                        {{-- User Avatar: Links to the idea detail page --}}
->>>>>>> main
                         <a href="{{ route('idea.show', $idea) }}">
                             <img src="https://i.pravatar.cc/60?img={{ $idea->user_id }}" alt="avatar" class="w-14 h-14 rounded-full border border-gray-200 shadow-sm">
                         </a>
@@ -124,32 +87,17 @@
                                 <div>{{ $idea->user->name }}</div>
                                 <div>&bull;</div>
                                 
-<<<<<<< HEAD
                                 {{-- Dynamic Status Tag --}}
                                 <div class="bg-green-100 text-green-700 text-xxs font-bold uppercase leading-none rounded-full text-center w-28 h-7 flex items-center justify-center shadow-sm">
                                     {{ $idea->status->name }}
                                 </div>
-=======
-                                {{-- Placeholder for Status Tag (Static for now) --}}
-                                <div class="bg-green-100 text-green-700 text-xxs font-bold uppercase leading-none rounded-full text-center w-28 h-7 flex items-center justify-center shadow-sm">
-    {{ $idea->status->name }}
-</div>
->>>>>>> main
                             </div>
                             
                             {{-- Comment Count --}}
                             <div class="flex items-center text-xs font-semibold text-gray-500">
-<<<<<<< HEAD
                                 <a href="{{ route('idea.show', $idea) . '#comments' }}" class="hover:text-gray-900 transition duration-150 ease-in">
                                     {{ $idea->comments_count }} comments
                                 </a>
-=======
-                                
-                                {{-- Placeholder for Comment Count: Assuming you will add a comment_count relationship later --}}
-                                <a href="{{ route('idea.show', $idea) }}" class="hover:text-gray-900 transition duration-150 ease-in">
-    {{ $idea->comments_count }} comments
-</a>
->>>>>>> main
                             </div>
                         </div>
                     </div>
@@ -157,20 +105,12 @@
             </div>
         @empty
             <div class="text-center p-10 text-gray-500 bg-white border rounded-lg">
-<<<<<<< HEAD
                 No ideas found matching your search.
-=======
-                No ideas found matching your criteria.
->>>>>>> main
             </div>
         @endforelse
     </div>
 
-<<<<<<< HEAD
-    {{-- 4. Pagination --}}
-=======
     {{-- Pagination Links --}}
->>>>>>> main
     <div class="mt-8">
         {{ $ideas->links() }}
     </div>

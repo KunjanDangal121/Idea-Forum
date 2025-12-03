@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>{{ $title ?? 'Idea Forum' }}</title>
+        <title>{{ $title ?? 'Spark' }}</title>
         
         <script src="https://cdn.tailwindcss.com"></script>
 
@@ -17,8 +17,9 @@
                 
                 {{-- Logo/Home Link --}}
                 <a href="{{ route('idea.index') }}" class="text-xl font-bold text-gray-800">
-                    💡 Idea Forum
-                </a>
+                    <span>⚡</span> 
+                    <span>Spark</span>
+                    </a>
 
                 {{-- Auth Links --}}
                 <nav class="space-x-4">
