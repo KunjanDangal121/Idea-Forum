@@ -1,7 +1,7 @@
 
-Capstone Project: # Idea-Forum
+**Capstone Project: Idea-Forum**
 
-*Spark
+**Spark**
 
     Spark is a modern, community-driven idea forum where innovation meets discussion. 
     provides a platform for users to share their concepts, vote on the best ideas, 
@@ -11,6 +11,13 @@ Designed with a premium Red Glass (Glassmorphism) aesthetic, Spark offers a seam
 
 ## 📸 Preview of Spark
 ![Homepage](public/screenshots/home.png)
+![Login](public/screenshots/login.png)
+![Register](public/screenshots/register.png)
+![Profile](public/screenshots/profile.png)
+![Idea View](public/screenshots/showIdea.png)
+![Create](public/screenshots/createidea.png)
+![Edit](public/screenshots/editIdea.png)
+![Buttons & comments](public/screenshots/edit&deleteIdea.png)
 
 Feature Overview of Spark:
 
