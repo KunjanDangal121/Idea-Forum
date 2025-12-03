@@ -16,7 +16,8 @@ class Idea extends Model
         'user_id',
         'title',
         'description',
-        'status_id', 
+        'status_id',
+        'image',
     ];
 
     // ====================================================================
