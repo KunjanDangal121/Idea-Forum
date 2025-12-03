@@ -15,7 +15,7 @@ Designed with a premium Red Glass (Glassmorphism) aesthetic, Spark offers a seam
 ![Register](public/screenshots/register.png)
 ![Profile](public/screenshots/profile.png)
 ![Idea View](public/screenshots/showIdea.png)
-![Create](public/screenshots/createidea.png)
+![Create](public/screenshots/createIdea.png)
 ![Edit](public/screenshots/editIdea.png)
 ![Buttons & comments](public/screenshots/edit&deleteIdea.png)
 
