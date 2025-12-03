@@ -4,6 +4,7 @@ use App\Livewire\CreateIdea;
 use App\Livewire\IdeasIndex;
 use App\Livewire\ShowIdea;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\EditProfile;
 
 // =======================================================
 // A. FIXES AND UNPROTECTED (Public) Routes
@@ -36,9 +37,7 @@ Route::middleware(['auth'])->group(function () {
     // === MISSING PROFILE/SETTINGS PLACEHOLDER ROUTES (Required by Layout) ===
     
     // FIX: Placeholder for 'profile.edit' to resolve sidebar crash
-    Route::get('/profile/settings', function () {
-        return view('dashboard');
-    })->name('profile.edit');
+    Route::get('/profile/settings', EditProfile::class)->name('profile.edit');
     
     // FIX: Placeholder for 'profile.update' (used by forms)
     Route::put('/profile/update', function () {

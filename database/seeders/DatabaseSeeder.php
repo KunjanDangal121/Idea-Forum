@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Comment;
 use App\Models\Idea;
+use App\Models\Status;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Database\Seeders\StatusSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,26 +15,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. CALL THE STATUS SEEDER FIRST!
-        // This ensures the 'statuses' table is populated before we create any ideas.
-        $this->call(StatusSeeder::class);
+        // 1. SETUP TOPICS (Formerly Statuses)
+        // We delete existing ones to prevent duplicates and create your categories
+        Status::truncate();
 
+        Status::create(['name' => 'Science']);
+        Status::create(['name' => 'Technology']);
+        Status::create(['name' => 'Books']);
+        Status::create(['name' => 'Movies']);
+        Status::create(['name' => 'Art']);
 
-        // --- Existing User, Idea, Comment, and Vote Creation ---
-
-        // 2. Create a specific Test User for YOU to login with
-        $me = User::factory()->create([
+        // 2. Create ADMIN User (Using your email for Admin checks)
+        User::factory()->create([
             'name' => 'Kunjan',
-            'email' => 'kunjan@example.com',
+            'email' => 'kunjandangal@gmail.com', // Matches your Admin Logic
             'password' => bcrypt('password'),
         ]);
 
         // 3. Create 10 other random users
         $users = User::factory(10)->create();
 
-        // 4. Create 20 Ideas, randomly assigned to the users we just created
-        // NOTE: The status_id for these ideas will default to 1 ('Open').
-        $ideas = Idea::factory(20)->recycle($users)->create();
+        // 4. Create 20 Ideas
+        // We assign them a random Topic (Status ID 1 to 5)
+        $ideas = Idea::factory(20)->recycle($users)->create(function () {
+            return ['status_id' => rand(1, 5)];
+        });
 
         // 5. Add random Comments
         foreach ($ideas as $idea) {

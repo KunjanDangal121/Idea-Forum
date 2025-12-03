@@ -4,65 +4,86 @@ namespace App\Livewire;
 
 use App\Models\Idea;
 use App\Models\Status;
+use App\Models\Vote;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Auth;
 
 class IdeasIndex extends Component
 {
     use WithPagination;
 
-    // 1. Properties to bind to search and filter inputs
-    public string $search = '';
-    public string $statusFilter = 'All'; 
+    public $statusFilter = 'All'; 
+    public $search = '';
+    
+    // NEW: Property for the input box
+    public $newTopic = ''; 
 
-    // 2. Reset pagination when filters change
-    public function updated($property)
+    protected $queryString = [
+        'statusFilter',
+        'search',
+    ];
+
+    public function updatingStatusFilter()
     {
-        if ($property === 'search' || $property === 'statusFilter') {
-            $this->resetPage();
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    // NEW: Function to add a topic
+    public function addTopic()
+    {
+        if (auth()->check() && auth()->user()->email === 'kunjandangal@gmail.com') {
+            
+            $this->validate(['newTopic' => 'required|min:2|max:20|unique:statuses,name']);
+
+            Status::create(['name' => $this->newTopic]);
+
+            $this->newTopic = ''; // Clear input
+            session()->flash('success', 'Topic added!');
         }
     }
 
-    /**
-     * 3. Toggles a vote for a given idea.
-     */
-    public function vote(Idea $idea)
+    public function vote($ideaId)
     {
-        // Authorization Check
-        if (!Auth::check()) {
+        if (!auth()->check()) {
             return redirect()->route('login');
         }
 
-        $user = Auth::user();
+        $vote = Vote::where('user_id', auth()->id())
+                    ->where('idea_id', $ideaId)
+                    ->first();
 
-        // Toggle Logic
-        if ($idea->isVotedBy($user)) {
-            $idea->votes()->detach($user);
+        if ($vote) {
+            $vote->delete();
         } else {
-            $idea->votes()->attach($user);
+            Vote::create([
+                'idea_id' => $ideaId,
+                'user_id' => auth()->id(),
+            ]);
         }
     }
 
     public function render()
     {
-        // 4. Fetch all statuses for the dropdown
-        $statuses = Status::all(); 
+        $statuses = Status::all();
 
-        $ideas = Idea::withCount(['votes', 'comments'])
-            ->with(['user', 'status'])
-            ->when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%');
-            })
+        $ideas = Idea::with(['user', 'status'])
             ->when($this->statusFilter && $this->statusFilter !== 'All', function ($query) {
-                $query->whereHas('status', function ($statusQuery) {
-                     $statusQuery->where('name', $this->statusFilter);
+                return $query->whereHas('status', function ($q) {
+                    $q->where('name', $this->statusFilter);
                 });
             })
-            ->latest()
-            ->simplePaginate(10);
+            ->when($this->search && strlen($this->search) >= 3, function ($query) {
+                return $query->where('title', 'like', '%'.$this->search.'%');
+            })
+            ->withCount('votes')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-        // 5. Pass both $ideas and $statuses to the view
         return view('livewire.ideas-index', [
             'ideas' => $ideas,
             'statuses' => $statuses,

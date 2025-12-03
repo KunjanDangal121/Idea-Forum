@@ -4,31 +4,37 @@ namespace App\Livewire;
 
 use App\Models\Idea;
 use Livewire\Component;
+use Livewire\WithFileUploads; // <--- REQUIRED FOR IMAGES
 
 class CreateIdea extends Component
 {
-    // Properties bound to the form fields
+    use WithFileUploads; // <--- TRAIT IMPORT
+
     public string $title = '';
     public string $description = '';
+    public $image; // <--- PROPERTY FOR IMAGE
 
-    // Validation rules for the form submission
     protected array $rules = [
-        'title' => 'required|min:10|max:100',
-        'description' => 'required|min:20',
+        'title' => 'required|min:4|max:100',
+        'description' => 'required|min:4',
+        'image' => 'nullable|image|max:5120', // Max 5MB
     ];
 
-    /**
-     * Handles the form submission and saves the new idea.
-     */
     public function submitIdea()
     {
         $this->validate();
+
+        $imagePath = null;
+        if ($this->image) {
+            $imagePath = $this->image->store('ideas', 'public');
+        }
 
         Idea::create([
             'user_id' => auth()->id(),
             'title' => $this->title,
             'description' => $this->description,
-            'status_id' => 1, // <--- CRITICAL: Force status to 'Open'
+            'status_id' => 1,
+            'image' => $imagePath,
         ]);
 
         session()->flash('success', 'Idea submitted successfully!');
@@ -37,7 +43,6 @@ class CreateIdea extends Component
 
     public function render()
     {
-        // Livewire automatically uses the default layout (app.blade.php)
         return view('livewire.create-idea');
     }
 }
